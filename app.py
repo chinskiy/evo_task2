@@ -16,7 +16,8 @@ def hello():
 
 @app.route("/returnAnswer", methods=['POST'])
 def returnAnswer():
-    print request.values
+    with open('dictionary.txt') as f:
+        d = f.readlines()
     user = request.form['textinput']
     return json.dumps({'word': random.choice(d).decode('utf-8'),
                        'user': user})
@@ -28,6 +29,4 @@ def page_not_found(e):
 
 
 if __name__ == "__main__":
-    with open('dictionary.txt') as f:
-        d = f.readlines()
     app.run()
