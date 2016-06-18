@@ -6,7 +6,9 @@ $(function(){
             type: 'POST',
         }).done(function (data) {
             var parsed = JSON.parse(data);
-            $('#output').html(parsed['user']);
+            if (parsed['user'].length > 0){
+             $('#output').html("Рад тебя видеть снова, " + parsed['word'] + parsed['user']);
+            };
         });
     });
 });
