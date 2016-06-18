@@ -1,9 +1,19 @@
 import json
 import random
+import sqlite3
+import os.path
 
 from flask import Flask
 from flask import render_template
 from flask import request
+
+
+if not os.path.isfile('database.db'):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE users(user text, epithet text)''')
+    conn.commit()
+    conn.close()
 
 
 app = Flask(__name__)
@@ -16,10 +26,21 @@ def hello():
 
 @app.route("/returnAnswer", methods=['POST'])
 def returnAnswer():
-    with open('dictionary.txt') as f:
-        d = f.readlines()
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
     user = request.form['textinput']
-    return json.dumps({'word': random.choice(d).decode('utf-8'),
+
+    epith = c.execute('''SELECT epithet FROM users 
+                                        WHERE user=?''', (user,)).fetchone()
+    if epith is None:
+        with open('dictionary.txt') as f:
+            d = f.readlines()
+        epith = random.choice(d).decode('utf-8')
+        c.execute("INSERT INTO users VALUES (?, ?)", (user, epith, ))
+        conn.commit()
+    conn.close()
+    return json.dumps({'word': epith,
                        'user': user})
 
 
