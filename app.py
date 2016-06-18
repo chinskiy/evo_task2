@@ -12,6 +12,7 @@ if not os.path.isfile('database.db'):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE users(user text, epithet text)''')
+    c.execute("INSERT INTO users VALUES (?, ?)", ('', '', ))
     conn.commit()
     conn.close()
 
@@ -31,7 +32,7 @@ def returnAnswer():
 
     user = request.form['textinput']
 
-    epith = c.execute('''SELECT epithet FROM users 
+    epith = c.execute('''SELECT epithet FROM users
                                         WHERE user=?''', (user,)).fetchone()
     if epith is None:
         with open('dictionary.txt') as f:
